@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.mapper.FriendmessageMapper">
+    <resultMap id="result_Friendmessage_Map" type="com.example.test.bean.Friendmessage">
+        <id column="Friendmessage0" property="id" />
+        <result column="Friendmessage1" property="fromname" />
+        <result column="Friendmessage2" property="toname" />
+        <result column="Friendmessage3" property="message" />
+        <result column="Friendmessage4" property="time" />
+        <result column="Friendmessage5" property="type" />
+    </resultMap>
+
+    <sql id="friendMessage_Column">
+        friendMessage.id as Friendmessage0
+        ,friendMessage.fromName as Friendmessage1
+        ,friendMessage.toName as Friendmessage2
+        ,friendMessage.message as Friendmessage3
+        ,friendMessage.time as Friendmessage4
+        ,friendMessage.type as Friendmessage5
+    </sql>
+
+    <select id="getFriendmessageRowCount" resultType="java.lang.Long">
+        select count(id) from friendMessage
+    </select>
+    <select id="selectFriendmessage" resultMap="result_Friendmessage_Map">
+        select 
+        <include refid="friendMessage_Column" /> 
+        from friendMessage
+    </select> 
+
+    <select id="selectFriendmessageById" parameterType="java.lang.Integer" resultMap="result_Friendmessage_Map">
+        select 
+            <include refid="friendMessage_Column" /> 
+        from friendMessage
+        where friendMessage.id = #{id}
+    </select> 
+
+
+    <insert id="insertFriendmessage" parameterType="com.example.test.bean.Friendmessage">
+        insert into friendMessage(id,fromName,toName,message,time,type) 
+        values(0,#{fromname},#{toname},#{message},#{time},#{type})
+    </insert>
+
+    <insert id="insertNonEmptyFriendmessage" parameterType="com.example.test.bean.Friendmessage">
+        insert into friendMessage
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="fromname != null">fromName,</if>
+            <if test="toname != null">toName,</if>
+            <if test="message != null">message,</if>
+            <if test="time != null">time,</if>
+            <if test="type != null">type,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="fromname != null"> #{fromname},</if>
+            <if test="toname != null"> #{toname},</if>
+            <if test="message != null"> #{message},</if>
+            <if test="time != null"> #{time},</if>
+            <if test="type != null"> #{type},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteFriendmessageById" parameterType="java.lang.Integer">
+        delete from friendMessage
+        where id = #{id}
+    </delete>
+
+    <update id="updateFriendmessageById" parameterType="com.example.test.bean.Friendmessage">
+        update friendMessage set
+            fromName=#{fromname}
+            ,toName=#{toname}
+            ,message=#{message}
+            ,time=#{time}
+            ,type=#{type}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyFriendmessageById" parameterType="com.example.test.bean.Friendmessage">
+        update friendMessage
+        <set>
+            <if test="fromname != null">
+                fromName=#{fromname},
+            </if>
+            <if test="toname != null">
+                toName=#{toname},
+            </if>
+            <if test="message != null">
+                message=#{message},
+            </if>
+            <if test="time != null">
+                time=#{time},
+            </if>
+            <if test="type != null">
+                type=#{type},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+    <select id="getAllMessageByPage" resultType="java.util.HashMap">
+        <bind name="offset" value="page*pagesize-pagesize"/>
+        select
+        *
+        from friendMessage
+        WHERE (fromName=#{fromName} and toName=#{toName} )or(fromName=#{toName} and toName=#{fromName} )
+        order by time desc
+        limit #{offset},#{pagesize}
+    </select>
+</mapper>

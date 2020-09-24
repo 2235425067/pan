@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.mapper.FriendMapper">
+    <resultMap id="result_Friend_Map" type="com.example.test.bean.Friend">
+        <id column="Friend0" property="id" />
+        <result column="Friend1" property="name" />
+        <result column="Friend2" property="friendname" />
+    </resultMap>
+
+    <sql id="friend_Column">
+        friend.id as Friend0
+        ,friend.name as Friend1
+        ,friend.friendName as Friend2
+    </sql>
+
+    <select id="getFriendRowCount" resultType="java.lang.Long">
+        select count(id) from friend
+    </select>
+    <select id="selectFriend" resultMap="result_Friend_Map">
+        select 
+        <include refid="friend_Column" /> 
+        from friend
+    </select> 
+
+    <select id="selectFriendById" parameterType="java.lang.Integer" resultMap="result_Friend_Map">
+        select 
+            <include refid="friend_Column" /> 
+        from friend
+        where friend.id = #{id}
+    </select>
+    <select id="selectFriendByName" resultMap="result_Friend_Map">
+        select
+        <include refid="friend_Column" />
+        from friend
+        where friend.name = #{name}
+    </select>
+
+    <insert id="insertFriend" parameterType="com.example.test.bean.Friend">
+        insert into friend(id,name,friendName) 
+        values(#{id},#{name},#{friendname})
+    </insert>
+
+    <insert id="insertNonEmptyFriend" parameterType="com.example.test.bean.Friend">
+        insert into friend
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="friendname != null">friendName,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="friendname != null"> #{friendname},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteFriendById" parameterType="java.lang.Integer">
+        delete from friend
+        where id = #{id}
+    </delete>
+
+    <update id="updateFriendById" parameterType="com.example.test.bean.Friend">
+        update friend set
+            name=#{name}
+            ,friendName=#{friendname}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyFriendById" parameterType="com.example.test.bean.Friend">
+        update friend
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="friendname != null">
+                friendName=#{friendname},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+</mapper>

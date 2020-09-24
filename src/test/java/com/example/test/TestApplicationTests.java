@@ -17,7 +17,7 @@ public class TestApplicationTests {
 
     @Test
     public void contextLoads() {
-        UserBean userBean = userService.loginIn("a","a");
+        UserBean userBean = userService.loginIn("taboo","taboo");
         System.out.println("该用户ID为：");
         System.out.println(userBean.getId());
     }
