@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lc.aop.mapper.SysLogMapper">
+    <resultMap id="result_SysLog_Map" type="com.lc.aop.entity.SysLog">
+        <id column="SysLog0" property="id" />
+        <result column="SysLog1" property="username" />
+        <result column="SysLog2" property="operation" />
+        <result column="SysLog3" property="time" />
+        <result column="SysLog4" property="method" />
+        <result column="SysLog5" property="params" />
+        <result column="SysLog6" property="ip" />
+        <result column="SysLog7" property="createTime" />
+    </resultMap>
+
+    <sql id="sys_log_Column">
+        sys_log.id as SysLog0
+        ,sys_log.username as SysLog1
+        ,sys_log.operation as SysLog2
+        ,sys_log.time as SysLog3
+        ,sys_log.method as SysLog4
+        ,sys_log.params as SysLog5
+        ,sys_log.ip as SysLog6
+        ,sys_log.create_time as SysLog7
+    </sql>
+
+    <select id="getSysLogRowCount" resultType="java.lang.Long">
+        select count(id) from sys_log
+    </select>
+    <select id="selectSysLog" resultMap="result_SysLog_Map">
+        select 
+        <include refid="sys_log_Column" /> 
+        from sys_log
+    </select> 
+
+    <select id="selectSysLogById" parameterType="java.lang.Integer" resultMap="result_SysLog_Map">
+        select 
+            <include refid="sys_log_Column" /> 
+        from sys_log
+        where sys_log.id = #{id}
+    </select> 
+
+
+    <insert id="insertSysLog" parameterType="com.lc.aop.entity.SysLog">
+        insert into sys_log(id,username,operation,time,method,params,ip,create_time) 
+        values(#{id},#{username},#{operation},#{time},#{method},#{params},#{ip},#{createTime})
+    </insert>
+
+    <insert id="insertNonEmptySysLog" parameterType="com.lc.aop.entity.SysLog">
+        insert into sys_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="username != null">username,</if>
+            <if test="operation != null">operation,</if>
+            <if test="time != null">time,</if>
+            <if test="method != null">method,</if>
+            <if test="params != null">params,</if>
+            <if test="ip != null">ip,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="username != null"> #{username},</if>
+            <if test="operation != null"> #{operation},</if>
+            <if test="time != null"> #{time},</if>
+            <if test="method != null"> #{method},</if>
+            <if test="params != null"> #{params},</if>
+            <if test="ip != null"> #{ip},</if>
+            <if test="createTime != null"> #{createTime},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteSysLogById" parameterType="java.lang.Integer">
+        delete from sys_log
+        where id = #{id}
+    </delete>
+
+    <update id="updateSysLogById" parameterType="com.lc.aop.entity.SysLog">
+        update sys_log set
+            username=#{username}
+            ,operation=#{operation}
+            ,time=#{time}
+            ,method=#{method}
+            ,params=#{params}
+            ,ip=#{ip}
+            ,create_time=#{createTime}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptySysLogById" parameterType="com.lc.aop.entity.SysLog">
+        update sys_log
+        <set>
+            <if test="username != null">
+                username=#{username},
+            </if>
+            <if test="operation != null">
+                operation=#{operation},
+            </if>
+            <if test="time != null">
+                time=#{time},
+            </if>
+            <if test="method != null">
+                method=#{method},
+            </if>
+            <if test="params != null">
+                params=#{params},
+            </if>
+            <if test="ip != null">
+                ip=#{ip},
+            </if>
+            <if test="createTime != null">
+                create_time=#{createTime},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <select id="getLogByPage" resultMap="result_SysLog_Map">
+        <bind name="offset" value="page*pagesize-pagesize"/>
+        select
+        <include refid="sys_log_Column" />
+        from sys_log
+        order by create_time desc
+        limit #{offset},#{pagesize}
+    </select>
+</mapper>

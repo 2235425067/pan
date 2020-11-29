@@ -6,6 +6,7 @@ import com.example.test.service.UserService;
 import com.hadoop.hdfs.entity.User;
 import com.hadoop.hdfs.service.HdfsService;
 import com.hadoop.util.Result;
+import com.lc.aop.annotation.Log;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -68,6 +69,7 @@ public class LoginController {
         }
         return map;
     }
+    @Log("获取用户信息")
     @RequestMapping(value = "/getUser")
     @ApiOperation("获取用户信息")
     @ApiImplicitParam(name = "name", value = "用户名", defaultValue = "taboo", required = true)

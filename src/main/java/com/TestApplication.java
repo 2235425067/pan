@@ -10,6 +10,7 @@ import org.springframework.web.filter.CorsFilter;
 
 @SpringBootApplication
 @MapperScan("com.example.test.mapper")
+@MapperScan("com.lc.aop.mapper")
 public class TestApplication {
 
     private CorsConfiguration buildConfig() {

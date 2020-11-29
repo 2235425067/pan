@@ -16,7 +16,7 @@ spring:
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.example.test.bean
+  type-aliases-package: com.example.test.bean , com.lc.aop.entity
   table:
     auto: update
   modol:
