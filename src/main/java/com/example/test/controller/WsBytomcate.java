@@ -68,7 +68,8 @@ public class WsBytomcate {
         }
     }
     private void sendUserMsg(String username,String toSsername,String msg) {
-        if(sessionMap.containsKey(username)==false){
+        if(sessionMap==null) sessionMap=new HashMap<>();
+        if(sessionMap.containsKey(toSsername)==false){
             return ;
         }
         Session session=sessionMap.get(toSsername);

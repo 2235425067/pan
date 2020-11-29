@@ -1,15 +1,105 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.test.mapper.UserMapper">
+    <resultMap id="result_UserBean_Map" type="com.example.test.bean.UserBean">
+        <id column="UserBean0" property="id" />
+        <result column="UserBean1" property="name" />
+        <result column="UserBean2" property="password" />
+        <result column="UserBean3" property="signature" />
+        <result column="UserBean4" property="role" />
+    </resultMap>
+
+    <sql id="user_Column">
+        user.id as UserBean0
+        ,user.name as UserBean1
+        ,user.password as UserBean2
+        ,user.signature as UserBean3
+        ,user.role as UserBean4
+    </sql>
+
+    <select id="getUserBeanRowCount" resultType="java.lang.Long">
+        select count(id) from user
+    </select>
+    <select id="selectUserBean" resultMap="result_UserBean_Map">
+        select
+        <include refid="user_Column" />
+        from user
+    </select>
+
+    <select id="selectUserBeanById" parameterType="java.lang.Integer" resultMap="result_UserBean_Map">
+        select
+        <include refid="user_Column" />
+        from user
+        where user.id = #{id}
+    </select>
+
+
+    <insert id="insertUserBean" parameterType="com.example.test.bean.UserBean">
+        insert into user(id,name,password,signature,role)
+        values(#{id},#{name},#{password},#{signature},#{role})
+    </insert>
+
+    <insert id="insertNonEmptyUserBean" parameterType="com.example.test.bean.UserBean">
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="password != null">password,</if>
+            <if test="signature != null">signature,</if>
+            <if test="role != null">role,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="name != null"> #{name},</if>
+            <if test="password != null"> #{password},</if>
+            <if test="signature != null"> #{signature},</if>
+            <if test="role != null"> #{role},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteUserBeanById" parameterType="java.lang.Integer">
+        delete from user
+        where id = #{id}
+    </delete>
+
+    <update id="updateUserBeanById" parameterType="com.example.test.bean.UserBean">
+        update user set
+            name=#{name}
+            ,password=#{password}
+            ,signature=#{signature}
+            ,role=#{role}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyUserBeanById" parameterType="com.example.test.bean.UserBean">
+        update user
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="password != null">
+                password=#{password},
+            </if>
+            <if test="signature != null">
+                signature=#{signature},
+            </if>
+            <if test="role != null">
+                role=#{role},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
 
     <select id="getInfo" parameterType="String" resultType="com.example.test.bean.UserBean">
         SELECT * FROM user WHERE name = #{name} AND password = #{password}
+    </select>
+    <select id="getUser" parameterType="String" resultType="com.example.test.bean.UserBean">
+        SELECT * FROM user WHERE name = #{name}
     </select>
     <select id="chickName" parameterType="String" resultType="com.example.test.bean.UserBean">
         SELECT * FROM user WHERE name = #{name}
     </select>
     <insert id="Register" parameterType="com.example.test.bean.UserBean">
-        insert into  user values (default ,#{name}, #{password});
+        insert into  user values (default ,#{name}, #{password},"暂未填写签名","普通用户");
     </insert>
-
 </mapper>

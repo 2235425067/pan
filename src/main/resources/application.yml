@@ -5,9 +5,9 @@ spring:
     time-zone: GMT+8
   datasource:
     name: test
-    url: jdbc:mysql://119.3.249.45:3306/test?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai #url
+    url: jdbc:mysql://119.3.249.45:3307/test?useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai #url
     username: root
-    password: 123456
+    password: shydadada
     driver-class-name: com.mysql.jdbc.Driver
   servlet:
     multipart:
@@ -17,6 +17,12 @@ spring:
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.example.test.bean
+  table:
+    auto: update
+  modol:
+    pack: com.example.test.bean
+  database:
+    type: mysql
 server:
   port: 8090
   tomcat:
