@@ -1,16 +1,22 @@
 package com.hadoop.hdfs.controller;
 
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.example.test.bean.File;
 import com.example.test.bean.UserBean;
+import com.example.test.service.FileService;
 import com.hadoop.hdfs.service.WordCount;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.fs.BlockLocation;
+import org.apache.hadoop.fs.Hdfs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,11 +25,13 @@ import com.hadoop.hdfs.service.HdfsService;
 import com.hadoop.util.Result;
 
 import javax.servlet.http.HttpServletResponse;
-
+@Api(tags = "文件管理")
 @RestController
 public class HdfsAction {
-
+    @Autowired
+    private FileService fileService;
     private static Logger LOGGER = LoggerFactory.getLogger(HdfsAction.class);
+
 
     /**
      * 创建文件夹
@@ -77,6 +85,25 @@ public class HdfsAction {
             return map;
         }
         List<Map<String, String>> returnList = HdfsService.listFile(path);
+//        List<File> mysqlList=fileService.selectFile();
+//        Hashtable<String,Integer> hashtable=new Hashtable<>();
+//        for(File i: mysqlList){
+//            hashtable.put(i.getFilepath()+i.getFilename(),i.getState());
+//        }
+//        List<Map<String, String>> newList=new ArrayList<>();
+//        for(Map<String,String> m : returnList){
+//            if(m.get("isDir")=="true"){
+//                newList.add(m);
+//                continue;
+//            }
+//            String key=m.get("filePath")+m.get("fileName");
+//            if(hashtable.contains(key)){
+//                if(hashtable.get(key)==1){
+//                    newList.add(m);
+//                }
+//            }
+//        }
+
         int len=returnList.size();
         map.put("rowCount",returnList.size());
         returnList=returnList.subList(currentPage*pageSize-pageSize,Math.min(currentPage*pageSize,len));
@@ -85,7 +112,11 @@ public class HdfsAction {
        // map.put("pageCount",pageBean.getPages());
         return map;
     }
-
+    @ApiOperation("上传文件")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "path", value = "路径",required = true,defaultValue = "hdfs://119.3.167.84:9000/pan/taboo"),
+    }
+    )
     @PostMapping("/createFile")
     public HashMap<String,Object> createFile(@RequestParam("path") String path  ,@RequestParam("file") MultipartFile file)
             throws Exception {
@@ -96,6 +127,13 @@ public class HdfsAction {
             map.put("msg","请求参数为空");
             return map;
         }
+        File f=new File();
+        f.setFilename(file.getOriginalFilename());
+        f.setFilepath(path);
+        f.setTime(new Date());
+        f.setState(0);
+        f.setLen((int)file.getSize());
+        fileService.insertNonEmptyFile(f);
         HdfsService.createFile(path, file);
         map.put("state","1");
         map.put("msg","创建文件成功");
@@ -175,5 +213,28 @@ public class HdfsAction {
     @ResponseBody
     public String test(@RequestParam("path") String path) throws Exception {
         return path;
+    }
+    @PostMapping(value = "/renameFile")
+    @ApiOperation("修改文件名字")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "oldPath", value = "原来名字路径",required = true,defaultValue = "/pan/taboo/taboo.docx"),
+            @ApiImplicitParam(name = "newPath", value = "新名字路径",required = true,defaultValue = "/pan/taboo/taboo.docx")
+    }
+    )
+    @ResponseBody
+    public boolean renameFile(@RequestParam("oldPath") String oldPath,String newPath) throws Exception {
+        boolean f= HdfsService.renameFile(oldPath,newPath);
+        return f;
+    }
+    @PostMapping(value = "/selectFile")
+    @ApiOperation("查询文件")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "path", value = "路径",required = true,defaultValue = "/pan/taboo"),
+            @ApiImplicitParam(name = "searchContent", value = "搜索内容",required = true,defaultValue = ".")
+    }
+    )
+    @ResponseBody
+    public List<File> selectFile(String path, String searchContent) throws Exception {
+        return HdfsService.searchFile(path,searchContent);
     }
 }

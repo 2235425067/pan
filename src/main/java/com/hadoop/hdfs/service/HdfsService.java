@@ -3,10 +3,7 @@ package com.hadoop.hdfs.service;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,6 +31,55 @@ public class HdfsService {
     private static String hdfsName="taboo";
     private static final int bufferSize = 1024 * 1024 * 64;
 
+    public  static List<com.example.test.bean.File> searchFile(String path, String searchContent) throws Exception {
+        return getAllFile(path,searchContent);
+    }
+    public static List<com.example.test.bean.File> getAllFile(String path,String searchContent) throws Exception {
+        if (StringUtils.isEmpty(path)) {
+            return null;
+        }
+        if (!existFile(path)) {
+            return null;
+        }
+
+        FileSystem fs = getFileSystem();
+        // 目标路径
+        Stack<String> stack=new Stack<>();
+        stack.push("hdfs://119.3.167.84:9000"+path);
+        List<com.example.test.bean.File> returnList = new ArrayList<>();
+        while(stack.empty()==false){
+            String top=stack.pop();
+            FileStatus[] list=fs.listStatus(new Path(top));
+            for(FileStatus f:list){
+                com.example.test.bean.File file=new com.example.test.bean.File();
+                Path filePath=f.getPath();
+                file.setFilename(filePath.getName());
+                file.setFilepath(filePath.toString());
+                file.setTime(new Date(f.getAccessTime()) );
+                if(f.isDir()){
+                    stack.push(top+"/"+filePath.getName());
+                    continue;
+                }
+                file.setLen((int)f.getLen());
+                if(filePath.getName().contains(searchContent)) returnList.add(file);
+            }
+        }
+        fs.close();
+        return returnList;
+    }
+    public static boolean renameFile(String oldName, String newName) throws Exception {
+        if (StringUtils.isEmpty(oldName) || StringUtils.isEmpty(newName)) {
+            return false;
+        }
+        FileSystem fs = getFileSystem();
+        // 原文件目标路径
+        Path oldPath = new Path(oldName);
+        // 重命名目标路径
+        Path newPath = new Path(newName);
+        boolean isOk = fs.rename(oldPath, newPath);
+        fs.close();
+        return isOk;
+    }
     public static boolean mkdir(String path) throws Exception {
         if (StringUtils.isEmpty(path)) {
             return false;
@@ -120,6 +166,7 @@ public class HdfsService {
     private static FileSystem getFileSystem() throws IOException {
         Configuration conf = new Configuration();
         conf.set("fs.defaultFS", "hdfs://119.3.167.84:9000");
+        conf.set("dfs.client.use.datanode.hostname", "true");
         FileSystem fs = FileSystem.newInstance(conf);
         return fs;
     }

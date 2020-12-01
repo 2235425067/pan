@@ -1,8 +1,11 @@
 package com.example.test.controller;
 
+import com.example.test.bean.File;
 import com.example.test.bean.UserBean;
 import com.example.test.bean.message;
+import com.example.test.service.FileService;
 import com.example.test.service.UserService;
+import com.lc.aop.annotation.Log;
 import com.lc.aop.entity.SysLog;
 import com.lc.aop.service.SysLogService;
 import io.swagger.annotations.Api;
@@ -11,6 +14,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -24,7 +28,10 @@ public class ManagerController {
     private UserService userService;
     @Autowired
     private SysLogService sysLogService;
-    @RequestMapping(value = "/deleteUser")
+    @Autowired
+    private FileService fileService;
+    @Log("删除用户")
+    @PostMapping(value = "/deleteUser")
     @ApiOperation("删除用户")
     @ApiImplicitParam(name = "id", value = "用户id", dataType = "int", required = true)
     @ResponseBody
@@ -34,7 +41,8 @@ public class ManagerController {
         if(re>0) me.setMessage("删除成功");
         return me;
     }
-    @RequestMapping(value = "/addUser")
+    @Log("添加用户")
+    @PostMapping(value = "/addUser")
     @ApiOperation("添加用户")
     @ResponseBody
     public message addUser(UserBean user){
@@ -43,7 +51,8 @@ public class ManagerController {
         if(re>0) me.setMessage("成功");
         return me;
     }
-    @RequestMapping(value = "/updateManager")
+    @Log("修改用户")
+    @PostMapping(value = "/updateManager")
     @ApiOperation("修改用户")
     @ResponseBody
     public message updateManager(UserBean user){
@@ -52,7 +61,7 @@ public class ManagerController {
         if(re>0) me.setMessage("成功");
         return me;
     }
-    @RequestMapping(value = "/getLogByPage")
+    @PostMapping(value = "/getLogByPage")
     @ApiOperation("获得用户日志(根据页号和页面大小)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "currentPage", value = "页号(1开始)",dataType="int",required = true),
@@ -64,11 +73,40 @@ public class ManagerController {
         List<SysLog> list= sysLogService.getLogByPage(currentPage,pageSize);
         return list;
     }
-    @RequestMapping(value = "/getLogCount")
+    @PostMapping(value = "/getLogCount")
     @ApiOperation("获得用户日志表元组个数")
     @ResponseBody
     public long getLogCount(){
         long ans= sysLogService.getSysLogRowCount();
         return ans;
+    }
+    @PostMapping(value = "/getCheckFileCount")
+    @ApiOperation("获得未审核文件个数")
+    @ResponseBody
+    public long getCheckFileCount(){
+        long ans= fileService.getCheckFileRowCount();
+        return ans;
+    }
+    @PostMapping(value = "/getCheckFileBypage")
+    @ApiOperation("获得未审核文件(根据页号和页面大小)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "currentPage", value = "页号(1开始)",dataType="int",required = true),
+            @ApiImplicitParam(name = "pageSize", value = "页面大小",dataType="int",required = true)
+    }
+    )
+    @ResponseBody
+    public List<File>  getCheckFileBypage(int currentPage, int pageSize){
+        List<File> list= fileService.getCheckFileByPage(currentPage,pageSize);
+        return list;
+    }
+    @Log("修改文件状态")
+    @PostMapping(value = "/updateFileState")
+    @ApiOperation("修改文件状态")
+    @ResponseBody
+    public message updateFileState(File file){
+        int re= fileService.updateNonEmptyFileById(file);
+        message me=new message("失败");
+        if(re>0) me.setMessage("成功");
+        return me;
     }
 }

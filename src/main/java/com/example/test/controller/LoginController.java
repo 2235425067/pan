@@ -14,10 +14,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 
@@ -33,7 +30,7 @@ public class LoginController {
     public String show(){
         return "login";
     }
-
+    @Log("登录")
     @RequestMapping(value = "/loginIn",method = RequestMethod.POST)
     public String login(String name,String password){
         UserBean userBean = userService.loginIn(name,password);
@@ -43,6 +40,7 @@ public class LoginController {
             return "error";
         }
     }
+    @Log("登录")
     @RequestMapping(value = "/loginjson")
     @ResponseBody
     public HashMap<String, Integer> login1(String name, String password){
@@ -55,6 +53,7 @@ public class LoginController {
         }
         return map;
     }
+    @Log("注册")
     @RequestMapping(value = "/Rigester")
     @ResponseBody
     public HashMap<String, Integer> Rigester(UserBean user) throws Exception {
@@ -70,7 +69,7 @@ public class LoginController {
         return map;
     }
     @Log("获取用户信息")
-    @RequestMapping(value = "/getUser")
+    @PostMapping(value = "/getUser")
     @ApiOperation("获取用户信息")
     @ApiImplicitParam(name = "name", value = "用户名", defaultValue = "taboo", required = true)
     @ResponseBody
@@ -80,7 +79,8 @@ public class LoginController {
         map.put("user",user);
         return user;
     }
-    @RequestMapping(value = "/updateUser")
+    @Log("更新用户信息")
+    @PostMapping(value = "/updateUser")
     @ApiOperation("更新用户信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "用户id",dataType="int", required = true),
@@ -94,7 +94,8 @@ public class LoginController {
         if(re>0) me.setMessage("更新成功");
         return me;
     }
-    @RequestMapping(value = "/updatePassword")
+    @Log("更新用户密码")
+    @PostMapping(value = "/updatePassword")
     @ApiOperation("更新用户密码")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "id", value = "用户id",dataType="int",required = true),
