@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.mapper.CommentMapper">
+    <resultMap id="result_Comment_Map" type="com.example.test.bean.Comment">
+        <id column="Comment0" property="id" />
+        <result column="Comment1" property="dynamicid" />
+        <result column="Comment2" property="content" />
+        <result column="Comment3" property="time" />
+        <result column="Comment4" property="username" />
+    </resultMap>
+
+    <sql id="comment_Column">
+        comment.id as Comment0
+        ,comment.dynamicId as Comment1
+        ,comment.content as Comment2
+        ,comment.time as Comment3
+        ,comment.username as Comment4
+    </sql>
+
+    <select id="getCommentRowCount" resultType="java.lang.Long">
+        select count(id) from comment
+    </select>
+    <select id="selectComment" resultMap="result_Comment_Map">
+        select 
+        <include refid="comment_Column" /> 
+        from comment
+    </select> 
+
+    <select id="selectCommentById" parameterType="java.lang.Integer" resultMap="result_Comment_Map">
+        select 
+            <include refid="comment_Column" /> 
+        from comment
+        where comment.id = #{id}
+    </select> 
+
+
+    <insert id="insertComment" parameterType="com.example.test.bean.Comment">
+        insert into comment(id,dynamicId,content,time,username) 
+        values(#{id},#{dynamicid},#{content},#{time},#{username})
+    </insert>
+
+    <insert id="insertNonEmptyComment" parameterType="com.example.test.bean.Comment">
+        insert into comment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="dynamicid != null">dynamicId,</if>
+            <if test="content != null">content,</if>
+            <if test="time != null">time,</if>
+            <if test="username != null">username,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="dynamicid != null"> #{dynamicid},</if>
+            <if test="content != null"> #{content},</if>
+            <if test="time != null"> #{time},</if>
+            <if test="username != null"> #{username},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteCommentById" parameterType="java.lang.Integer">
+        delete from comment
+        where id = #{id}
+    </delete>
+
+    <update id="updateCommentById" parameterType="com.example.test.bean.Comment">
+        update comment set
+            dynamicId=#{dynamicid}
+            ,content=#{content}
+            ,time=#{time}
+            ,username=#{username}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyCommentById" parameterType="com.example.test.bean.Comment">
+        update comment
+        <set>
+            <if test="dynamicid != null">
+                dynamicId=#{dynamicid},
+            </if>
+            <if test="content != null">
+                content=#{content},
+            </if>
+            <if test="time != null">
+                time=#{time},
+            </if>
+            <if test="username != null">
+                username=#{username},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+</mapper>

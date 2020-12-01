@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.mapper.LikeMapper">
+    <resultMap id="result_Like_Map" type="com.example.test.bean.Like">
+        <id column="Like0" property="id" />
+        <result column="Like1" property="dynamicid" />
+        <result column="Like2" property="username" />
+        <result column="Like3" property="time" />
+    </resultMap>
+
+    <sql id="like_Column">
+        like.id as Like0
+        ,like.dynamicId as Like1
+        ,like.username as Like2
+        ,like.time as Like3
+    </sql>
+
+    <select id="getLikeRowCount" resultType="java.lang.Long">
+        select count(id) from like
+    </select>
+    <select id="selectLike" resultMap="result_Like_Map">
+        select 
+        <include refid="like_Column" /> 
+        from like
+    </select> 
+
+    <select id="selectLikeById" parameterType="java.lang.Integer" resultMap="result_Like_Map">
+        select 
+            <include refid="like_Column" /> 
+        from like
+        where like.id = #{id}
+    </select> 
+
+
+    <insert id="insertLike" parameterType="com.example.test.bean.Like">
+        insert into like(id,dynamicId,username,time) 
+        values(#{id},#{dynamicid},#{username},#{time})
+    </insert>
+
+    <insert id="insertNonEmptyLike" parameterType="com.example.test.bean.Like">
+        insert into dynamicLike
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="dynamicid != null">dynamicId,</if>
+            <if test="username != null">username,</if>
+            <if test="time != null">time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="dynamicid != null"> #{dynamicid},</if>
+            <if test="username != null"> #{username},</if>
+            <if test="time != null"> #{time},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteLikeById" parameterType="java.lang.Integer">
+        delete from like
+        where id = #{id}
+    </delete>
+
+    <update id="updateLikeById" parameterType="com.example.test.bean.Like">
+        update like set
+            dynamicId=#{dynamicid}
+            ,username=#{username}
+            ,time=#{time}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyLikeById" parameterType="com.example.test.bean.Like">
+        update like
+        <set>
+            <if test="dynamicid != null">
+                dynamicId=#{dynamicid},
+            </if>
+            <if test="username != null">
+                username=#{username},
+            </if>
+            <if test="time != null">
+                time=#{time},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.mapper.ImageMapper">
+    <resultMap id="result_Image_Map" type="com.example.test.bean.Image">
+        <id column="Image0" property="id" />
+        <result column="Image1" property="dynamicid" />
+        <result column="Image2" property="image" />
+    </resultMap>
+
+    <sql id="image_Column">
+        image.id as Image0
+        ,image.dynamicId as Image1
+        ,image.image as Image2
+    </sql>
+
+    <select id="getImageRowCount" resultType="java.lang.Long">
+        select count(id) from image
+    </select>
+    <select id="selectImage" resultMap="result_Image_Map">
+        select 
+        <include refid="image_Column" /> 
+        from image
+    </select> 
+
+    <select id="selectImageById" parameterType="java.lang.Integer" resultMap="result_Image_Map">
+        select 
+            <include refid="image_Column" /> 
+        from image
+        where image.id = #{id}
+    </select> 
+
+
+    <insert id="insertImage" parameterType="com.example.test.bean.Image">
+        insert into image(id,dynamicId,image) 
+        values(#{id},#{dynamicid},#{image})
+    </insert>
+
+    <insert id="insertNonEmptyImage" parameterType="com.example.test.bean.Image">
+        insert into image
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="dynamicid != null">dynamicId,</if>
+            <if test="image != null">image,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="dynamicid != null"> #{dynamicid},</if>
+            <if test="image != null"> #{image},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteImageById" parameterType="java.lang.Integer">
+        delete from image
+        where id = #{id}
+    </delete>
+
+    <update id="updateImageById" parameterType="com.example.test.bean.Image">
+        update image set
+            dynamicId=#{dynamicid}
+            ,image=#{image}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyImageById" parameterType="com.example.test.bean.Image">
+        update image
+        <set>
+            <if test="dynamicid != null">
+                dynamicId=#{dynamicid},
+            </if>
+            <if test="image != null">
+                image=#{image},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+</mapper>

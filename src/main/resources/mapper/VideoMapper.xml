@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.mapper.VideoMapper">
+    <resultMap id="result_Video_Map" type="com.example.test.bean.Video">
+        <id column="Video0" property="id" />
+        <result column="Video1" property="dynamicid" />
+        <result column="Video2" property="filename" />
+        <result column="Video3" property="filepath" />
+    </resultMap>
+
+    <sql id="video_Column">
+        video.id as Video0
+        ,video.dynamicId as Video1
+        ,video.fileName as Video2
+        ,video.filePath as Video3
+    </sql>
+
+    <select id="getVideoRowCount" resultType="java.lang.Long">
+        select count(id) from video
+    </select>
+    <select id="selectVideo" resultMap="result_Video_Map">
+        select 
+        <include refid="video_Column" /> 
+        from video
+    </select> 
+
+    <select id="selectVideoById" parameterType="java.lang.Integer" resultMap="result_Video_Map">
+        select 
+            <include refid="video_Column" /> 
+        from video
+        where video.id = #{id}
+    </select>
+    <select id="selectVideoByDynamicId" parameterType="java.lang.Integer" resultMap="result_Video_Map">
+        select
+        <include refid="video_Column" />
+        from video
+        where video.dynamicid = #{dynamicId}
+    </select>
+
+
+    <insert id="insertVideo" parameterType="com.example.test.bean.Video">
+        insert into video(id,dynamicId,fileName,filePath) 
+        values(#{id},#{dynamicid},#{filename},#{filepath})
+    </insert>
+
+    <insert id="insertNonEmptyVideo" parameterType="com.example.test.bean.Video">
+        insert into video
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="dynamicid != null">dynamicId,</if>
+            <if test="filename != null">fileName,</if>
+            <if test="filepath != null">filePath,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="dynamicid != null"> #{dynamicid},</if>
+            <if test="filename != null"> #{filename},</if>
+            <if test="filepath != null"> #{filepath},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteVideoById" parameterType="java.lang.Integer">
+        delete from video
+        where id = #{id}
+    </delete>
+
+    <update id="updateVideoById" parameterType="com.example.test.bean.Video">
+        update video set
+            dynamicId=#{dynamicid}
+            ,fileName=#{filename}
+            ,filePath=#{filepath}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyVideoById" parameterType="com.example.test.bean.Video">
+        update video
+        <set>
+            <if test="dynamicid != null">
+                dynamicId=#{dynamicid},
+            </if>
+            <if test="filename != null">
+                fileName=#{filename},
+            </if>
+            <if test="filepath != null">
+                filePath=#{filepath},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+</mapper>

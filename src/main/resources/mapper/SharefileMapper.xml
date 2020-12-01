@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.mapper.SharefileMapper">
+    <resultMap id="result_Sharefile_Map" type="com.example.test.bean.Sharefile">
+        <id column="Sharefile0" property="id" />
+        <result column="Sharefile1" property="code" />
+        <result column="Sharefile2" property="fileid" />
+        <result column="Sharefile3" property="sharetime" />
+        <result column="Sharefile4" property="username" />
+    </resultMap>
+
+    <sql id="shareFile_Column">
+        shareFile.id as Sharefile0
+        ,shareFile.code as Sharefile1
+        ,shareFile.fileId as Sharefile2
+        ,shareFile.shareTime as Sharefile3
+        ,shareFile.username as Sharefile4
+    </sql>
+
+    <select id="getSharefileRowCount" resultType="java.lang.Long">
+        select count(id) from shareFile
+    </select>
+    <select id="selectSharefile" resultMap="result_Sharefile_Map">
+        select 
+        <include refid="shareFile_Column" /> 
+        from shareFile
+    </select> 
+
+    <select id="selectSharefileById" parameterType="java.lang.Integer" resultMap="result_Sharefile_Map">
+        select 
+            <include refid="shareFile_Column" /> 
+        from shareFile
+        where shareFile.id = #{id}
+    </select>
+    <select id="selectSharefileByCode" parameterType="java.lang.String" resultMap="result_Sharefile_Map">
+        select
+        <include refid="shareFile_Column" />
+        from shareFile
+        where shareFile.code = #{code}
+    </select>
+    <select id="selectSharefileByUsername" parameterType="java.lang.String" resultMap="result_Sharefile_Map">
+        select
+        <include refid="shareFile_Column" />
+        from shareFile
+        where shareFile.username = #{username}
+    </select>
+
+    <insert id="insertSharefile" parameterType="com.example.test.bean.Sharefile">
+        insert into shareFile(id,code,fileId,shareTime,username) 
+        values(#{id},#{code},#{fileid},#{sharetime},#{username})
+    </insert>
+
+    <insert id="insertNonEmptySharefile" parameterType="com.example.test.bean.Sharefile">
+        insert into shareFile
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="code != null">code,</if>
+            <if test="fileid != null">fileId,</if>
+            <if test="sharetime != null">shareTime,</if>
+            <if test="username != null">username,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="code != null"> #{code},</if>
+            <if test="fileid != null"> #{fileid},</if>
+            <if test="sharetime != null"> #{sharetime},</if>
+            <if test="username != null"> #{username},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteSharefileById" parameterType="java.lang.Integer">
+        delete from shareFile
+        where id = #{id}
+    </delete>
+
+    <update id="updateSharefileById" parameterType="com.example.test.bean.Sharefile">
+        update shareFile set
+            code=#{code}
+            ,fileId=#{fileid}
+            ,shareTime=#{sharetime}
+            ,username=#{username}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptySharefileById" parameterType="com.example.test.bean.Sharefile">
+        update shareFile
+        <set>
+            <if test="code != null">
+                code=#{code},
+            </if>
+            <if test="fileid != null">
+                fileId=#{fileid},
+            </if>
+            <if test="sharetime != null">
+                shareTime=#{sharetime},
+            </if>
+            <if test="username != null">
+                username=#{username},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+</mapper>

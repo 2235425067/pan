@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.mapper.FileMapper">
+    <resultMap id="result_File_Map" type="com.example.test.bean.File">
+        <id column="File0" property="id" />
+        <result column="File1" property="filename" />
+        <result column="File2" property="filepath" />
+        <result column="File3" property="time" />
+        <result column="File4" property="len" />
+        <result column="File5" property="state" />
+    </resultMap>
+
+    <sql id="file_Column">
+        file.id as File0
+        ,file.fileName as File1
+        ,file.filePath as File2
+        ,file.time as File3
+        ,file.len as File4
+        ,file.state as File5
+    </sql>
+
+    <select id="getFileRowCount" resultType="java.lang.Long">
+        select count(id) from file
+    </select>
+    <select id="getCheckFileRowCount" resultType="java.lang.Long">
+        select count(id) from file where state=0
+    </select>
+    <select id="selectFile" resultMap="result_File_Map">
+        select 
+        <include refid="file_Column" /> 
+        from file
+    </select> 
+
+    <select id="selectFileById" parameterType="java.lang.Integer" resultMap="result_File_Map">
+        select 
+            <include refid="file_Column" /> 
+        from file
+        where file.id = #{id}
+    </select> 
+
+
+    <insert id="insertFile" parameterType="com.example.test.bean.File">
+        insert into file(id,fileName,filePath,time,len,state) 
+        values(#{id},#{filename},#{filepath},#{time},#{len},#{state})
+    </insert>
+
+    <insert id="insertNonEmptyFile" parameterType="com.example.test.bean.File">
+        insert into file
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="filename != null">fileName,</if>
+            <if test="filepath != null">filePath,</if>
+            <if test="time != null">time,</if>
+            <if test="len != null">len,</if>
+            <if test="state != null">state,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="filename != null"> #{filename},</if>
+            <if test="filepath != null"> #{filepath},</if>
+            <if test="time != null"> #{time},</if>
+            <if test="len != null"> #{len},</if>
+            <if test="state != null"> #{state},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteFileById" parameterType="java.lang.Integer">
+        delete from file
+        where id = #{id}
+    </delete>
+
+    <update id="updateFileById" parameterType="com.example.test.bean.File">
+        update file set
+            fileName=#{filename}
+            ,filePath=#{filepath}
+            ,time=#{time}
+            ,len=#{len}
+            ,state=#{state}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyFileById" parameterType="com.example.test.bean.File">
+        update file
+        <set>
+            <if test="filename != null">
+                fileName=#{filename},
+            </if>
+            <if test="filepath != null">
+                filePath=#{filepath},
+            </if>
+            <if test="time != null">
+                time=#{time},
+            </if>
+            <if test="len != null">
+                len=#{len},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <select id="getCheckFileByPage" resultMap="result_File_Map">
+        <bind name="offset" value="page*pagesize-pagesize"/>
+        select
+        <include refid="file_Column" />
+        from file
+        where state=0
+        order by time desc
+        limit #{offset},#{pagesize}
+    </select>
+</mapper>

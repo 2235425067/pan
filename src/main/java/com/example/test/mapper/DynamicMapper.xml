@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test.mapper.DynamicMapper">
+    <resultMap id="result_Dynamic_Map" type="com.example.test.bean.Dynamic">
+        <id column="Dynamic0" property="id" />
+        <result column="Dynamic1" property="content" />
+        <result column="Dynamic2" property="time" />
+        <result column="Dynamic3" property="likenum" />
+        <result column="Dynamic4" property="username" />
+    </resultMap>
+
+    <sql id="dynamic_Column">
+        dynamic.id as Dynamic0
+        ,dynamic.content as Dynamic1
+        ,dynamic.time as Dynamic2
+        ,dynamic.likeNum as Dynamic3
+        ,dynamic.username as Dynamic4
+    </sql>
+
+    <select id="getDynamicRowCount" resultType="java.lang.Long">
+        select count(id) from dynamic
+    </select>
+    <select id="selectDynamic" resultMap="result_Dynamic_Map">
+        select 
+        <include refid="dynamic_Column" /> 
+        from dynamic
+    </select> 
+
+    <select id="selectDynamicById" parameterType="java.lang.Integer" resultMap="result_Dynamic_Map">
+        select 
+            <include refid="dynamic_Column" /> 
+        from dynamic
+        where dynamic.id = #{id}
+    </select> 
+
+
+    <insert id="insertDynamic" parameterType="com.example.test.bean.Dynamic">
+        insert into dynamic(id,content,time,likeNum,username) 
+        values(#{id},#{content},#{time},#{likenum},#{username})
+    </insert>
+
+    <insert id="insertNonEmptyDynamic" parameterType="com.example.test.bean.Dynamic">
+        insert into dynamic
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="content != null">content,</if>
+            <if test="time != null">time,</if>
+            <if test="likenum != null">likeNum,</if>
+            <if test="username != null">username,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null"> #{id},</if>
+            <if test="content != null"> #{content},</if>
+            <if test="time != null"> #{time},</if>
+            <if test="likenum != null"> #{likenum},</if>
+            <if test="username != null"> #{username},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteDynamicById" parameterType="java.lang.Integer">
+        delete from dynamic
+        where id = #{id}
+    </delete>
+
+    <update id="updateDynamicById" parameterType="com.example.test.bean.Dynamic">
+        update dynamic set
+            content=#{content}
+            ,time=#{time}
+            ,likeNum=#{likenum}
+            ,username=#{username}
+        where id=#{id}
+    </update>
+
+    <update id="updateNonEmptyDynamicById" parameterType="com.example.test.bean.Dynamic">
+        update dynamic
+        <set>
+            <if test="content != null">
+                content=#{content},
+            </if>
+            <if test="time != null">
+                time=#{time},
+            </if>
+            <if test="likenum != null">
+                likeNum=#{likenum},
+            </if>
+            <if test="username != null">
+                username=#{username},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+</mapper>
