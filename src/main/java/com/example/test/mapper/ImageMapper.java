@@ -10,4 +10,5 @@ public interface ImageMapper{
     int deleteImageById(Integer id);
     int updateImageById(Image enti);
     int updateNonEmptyImageById(Image enti);
+    Image selectImageId(int dynamicId);
 }

@@ -2,7 +2,9 @@ package com.example.test.controller;
 
 import com.example.test.bean.File;
 import com.example.test.bean.Sharefile;
+import com.example.test.bean.SharefileBean;
 import com.example.test.bean.message;
+import com.example.test.service.FileService;
 import com.example.test.service.SharefileService;
 import com.hadoop.hdfs.service.HdfsService;
 import com.lc.aop.annotation.Log;
@@ -17,21 +19,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @Api(tags = "用户操作")
 public class UserController {
     @Autowired
     private SharefileService sharefileService;
+    @Autowired
+    private FileService fileService;
     @Log("分享文件")
     @PostMapping(value = "/shareFile")
     @ApiOperation("分享文件")
     @ResponseBody
-    public message shareFile(Sharefile sharefile) throws Exception {
+    public message shareFile(Sharefile sharefile,String filePath,String fileName) throws Exception {
         sharefile.setSharetime(new Date());
+        sharefile.setFileid(fileService.selectFileByPath(filePath,fileName).getId());
+        sharefile.setCode(UUID.randomUUID().toString().replace("-", "").toLowerCase());
         int re=sharefileService.insertNonEmptySharefile(sharefile);
         message me=new message("失败");
-        if (re>0) me.setMessage("成功");
+        if (re>0) me.setMessage(sharefile.getCode());
         return me;
     }
     @PostMapping(value = "/getShareFileByCode")
@@ -41,11 +48,27 @@ public class UserController {
         Sharefile re=sharefileService.selectSharefileByCode(sharefile.getCode());
         return re;
     }
+    @PostMapping(value = "/getShareFileBeanByCode")
+    @ApiOperation("根据code获得分享文件（两个表连接）")
+    @ResponseBody
+    public SharefileBean getShareFileBeanByCode(Sharefile sharefile) throws Exception {
+        SharefileBean re=sharefileService.selectSharefileBeanByCode(sharefile.getCode());
+        return re;
+    }
     @PostMapping(value = "/getShareFileByUsername")
     @ApiOperation("根据用户名获得分享文件")
     @ResponseBody
     public List<Sharefile> getShareFileByUsername(Sharefile sharefile) throws Exception {
         List<Sharefile> re=sharefileService.selectSharefileByUsername(sharefile.getUsername());
+
+        return re;
+    }
+    @PostMapping(value = "/getShareFileBeanByUsername")
+    @ApiOperation("根据用户名获得分享文件（两个表连接）")
+    @ResponseBody
+    public List<SharefileBean> getShareFileBeanByUsername(Sharefile sharefile) throws Exception {
+        List<SharefileBean> re=sharefileService.selectSharefileBeanByUsername(sharefile.getUsername());
+
         return re;
     }
     @PostMapping(value = "/deleteShareFileById")

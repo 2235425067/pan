@@ -24,8 +24,12 @@
         select 
         <include refid="comment_Column" /> 
         from comment
-    </select> 
-
+    </select>
+    <select id="selectCommentByDynamicId" resultMap="result_Comment_Map">
+        select
+        <include refid="comment_Column" />
+        from comment where comment.dynamicId=#{dynamicId}
+    </select>
     <select id="selectCommentById" parameterType="java.lang.Integer" resultMap="result_Comment_Map">
         select 
             <include refid="comment_Column" /> 

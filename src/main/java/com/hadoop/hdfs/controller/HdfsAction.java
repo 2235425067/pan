@@ -129,7 +129,7 @@ public class HdfsAction {
         }
         File f=new File();
         f.setFilename(file.getOriginalFilename());
-        f.setFilepath(path);
+        f.setFilepath("hdfs://119.3.167.84:9000"+path+file.getOriginalFilename());
         f.setTime(new Date());
         f.setState(0);
         f.setLen((int)file.getSize());
@@ -155,6 +155,7 @@ public class HdfsAction {
     public HashMap<String,Object>  deleteFile(@RequestParam("list")List<String>list) throws Exception {
         for(String path:list){
             boolean isOk = HdfsService.deleteFile(path);
+            fileService.updateNonEmptyFileByPath(path);
         }
         HashMap<String,Object> map=new HashMap<>();
         map.put("state","1");
@@ -170,6 +171,19 @@ public class HdfsAction {
         res.setCharacterEncoding("UTF-8");
         res.setContentType("text/html;charset=UTF-8");
         HdfsService.getDownloadFileStream(res,filePath);
+        return "success";
+    }
+    @PostMapping(value = "/downLoadByid")
+    @ResponseBody
+    public String downLoad(HttpServletResponse res,@RequestParam("id") int id) throws Exception {
+
+        res.setHeader("Content-type", "text/html;charset=UTF-8");
+
+        res.setCharacterEncoding("UTF-8");
+        res.setContentType("text/html;charset=UTF-8");
+
+        File file=fileService.selectFileById(id);
+        HdfsService.getDownloadFileStream(res,file.getFilepath());
         return "success";
     }
     @RequestMapping(value = "/downLoadMovie")

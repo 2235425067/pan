@@ -22,6 +22,12 @@ public class FileServiceImpl implements FileService{
     public File selectFileById(Integer id){
         return fileMapper.selectFileById(id);
     }
+
+    @Override
+    public File selectFileByPath(String path ,String fileName) {
+        return fileMapper.selectFileByPath(path,fileName);
+    }
+
     @Override
     public int insertFile(File value){
         return fileMapper.insertFile(value);
@@ -51,6 +57,21 @@ public class FileServiceImpl implements FileService{
     @Override
     public long getCheckFileRowCount() {
         return fileMapper.getCheckFileRowCount();
+    }
+
+    @Override
+    public long getFinishFileRowCount() {
+        return fileMapper.getFinishFileRowCount();
+    }
+
+    @Override
+    public int updateNonEmptyFileByPath(String filepath) {
+        return fileMapper.updateNonEmptyFileByPath(filepath);
+    }
+
+    @Override
+    public List<File> getFinishFileByPage(int page, int pagesize) {
+        return fileMapper.getFinishFileByPage(page,pagesize);
     }
 
     public FileMapper getFileMapper() {

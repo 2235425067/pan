@@ -44,6 +44,11 @@ public class CommentServiceImpl implements CommentService{
         return commentMapper.updateNonEmptyCommentById(enti);
     }
 
+    @Override
+    public List<Comment> selectCommentByDynamicId(int dynamicId) {
+        return commentMapper.selectCommentByDynamicId(dynamicId);
+    }
+
     public CommentMapper getCommentMapper() {
         return this.commentMapper;
     }

@@ -43,6 +43,12 @@ public class ImageServiceImpl implements ImageService{
         return imageMapper.updateNonEmptyImageById(enti);
     }
 
+    @Override
+    public Image selectImageId(int dynamicId) {
+        Image x=imageMapper.selectImageId(dynamicId);
+        return x;
+    }
+
     public ImageMapper getImageMapper() {
         return this.imageMapper;
     }

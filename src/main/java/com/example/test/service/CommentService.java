@@ -10,4 +10,5 @@ public interface CommentService{
     int deleteCommentById(Integer id);
     int updateCommentById(Comment enti);
     int updateNonEmptyCommentById(Comment enti);
+    List<Comment> selectCommentByDynamicId(int dynamicId);
 }

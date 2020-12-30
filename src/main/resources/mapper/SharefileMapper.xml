@@ -16,7 +16,25 @@
         ,shareFile.shareTime as Sharefile3
         ,shareFile.username as Sharefile4
     </sql>
+    <resultMap id="result_SharefileBean_Map" type="com.example.test.bean.SharefileBean">
+        <id column="Sharefile0" property="id" />
+        <result column="Sharefile1" property="code" />
+        <result column="Sharefile2" property="fileid" />
+        <result column="Sharefile3" property="sharetime" />
+        <result column="Sharefile4" property="username" />
+        <result column="Sharefile5" property="filename" />
+        <result column="Sharefile6" property="filepath" />
+    </resultMap>
 
+    <sql id="shareFileBean_Column">
+        shareFile.id as Sharefile0
+        ,shareFile.code as Sharefile1
+        ,shareFile.fileId as Sharefile2
+        ,shareFile.shareTime as Sharefile3
+        ,shareFile.username as Sharefile4
+        ,file.fileName as Sharefile5
+        ,file.filePath as Sharefile6
+    </sql>
     <select id="getSharefileRowCount" resultType="java.lang.Long">
         select count(id) from shareFile
     </select>
@@ -38,13 +56,24 @@
         from shareFile
         where shareFile.code = #{code}
     </select>
+    <select id="selectSharefileBeanByCode" parameterType="java.lang.String" resultMap="result_SharefileBean_Map">
+        select
+        <include refid="shareFileBean_Column" />
+        from shareFile,file
+        where  shareFile.fileId=file.id and shareFile.code = #{code}
+    </select>
     <select id="selectSharefileByUsername" parameterType="java.lang.String" resultMap="result_Sharefile_Map">
         select
         <include refid="shareFile_Column" />
         from shareFile
         where shareFile.username = #{username}
     </select>
-
+    <select id="selectSharefileBeanByUsername" parameterType="java.lang.String" resultMap="result_SharefileBean_Map">
+        select
+        <include refid="shareFileBean_Column" />
+        from shareFile,file
+        where  shareFile.fileId=file.id and shareFile.username = #{username}
+    </select>
     <insert id="insertSharefile" parameterType="com.example.test.bean.Sharefile">
         insert into shareFile(id,code,fileId,shareTime,username) 
         values(#{id},#{code},#{fileid},#{sharetime},#{username})

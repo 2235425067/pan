@@ -55,7 +55,7 @@ public class WsBytomcate {
     @OnClose
     public void OnClose(Session session, @PathParam("username") String username) throws IOException {
         sessions.remove(session);
-        sendTextMsg("好友 ["+ username + "] 退出群聊");
+        //sendTextMsg("好友 ["+ username + "] 退出群聊");
         sessionMap.remove(username);
     }
     @OnError

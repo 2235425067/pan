@@ -6,6 +6,9 @@ import com.example.test.service.UserService;
 import com.hadoop.hdfs.entity.User;
 import com.hadoop.hdfs.service.HdfsService;
 import com.hadoop.util.Result;
+import com.jwt.bean.JwtToken;
+import com.jwt.service.RedisService;
+import com.jwt.util.JwtUtil;
 import com.lc.aop.annotation.Log;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -15,8 +18,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.method.HandlerMethod;
 import java.util.HashMap;
+import java.util.UUID;
 
 @Controller
 @Api(tags = "用户管理")
@@ -25,7 +29,8 @@ public class LoginController {
     //将Service注入Web层
     @Autowired
     UserService userService;
-
+    @Autowired
+    private RedisService redisService;
     @RequestMapping("/login")
     public String show(){
         return "login";
@@ -43,13 +48,38 @@ public class LoginController {
     @Log("登录")
     @RequestMapping(value = "/loginjson")
     @ResponseBody
-    public HashMap<String, Integer> login1(String name, String password){
+    public HashMap<String, String> login1(String name, String password){
         UserBean userBean = userService.loginIn(name,password);
-        HashMap<String, Integer> map=new HashMap<String, Integer>();
+        HashMap<String, String> map=new HashMap<String, String>();
         if(userBean!=null){
-            map.put("code",1);
+            map.put("code","1");
+            String userId = UUID.randomUUID().toString();
+            // 生成签名
+            String token= JwtUtil.sign(userId);
+            //String token= userId;
+            //redisService.set(token,name);
+            map.put("token",token);
         }else {
-            map.put("code",0);
+            map.put("code","0");
+        }
+        return map;
+    }
+    @Log("管理员登录")
+    @RequestMapping(value = "/ManagerLogin")
+    @ResponseBody
+    public HashMap<String, String> ManagerLogin(String name, String password){
+        UserBean userBean = userService.loginIn(name,password);
+        HashMap<String, String> map=new HashMap<String, String>();
+        if(userBean!=null&&userBean.getRole().equals("管理员")){
+            map.put("code","1");
+            String userId = UUID.randomUUID().toString();
+            // 生成签名
+            String token= JwtUtil.sign(userId);
+            //String token= userId;
+            //redisService.set(token,name);
+            map.put("token",token);
+        }else {
+            map.put("code","0");
         }
         return map;
     }
@@ -68,6 +98,7 @@ public class LoginController {
         }
         return map;
     }
+    @JwtToken
     @Log("获取用户信息")
     @PostMapping(value = "/getUser")
     @ApiOperation("获取用户信息")

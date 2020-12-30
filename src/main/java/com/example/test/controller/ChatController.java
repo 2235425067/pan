@@ -35,8 +35,19 @@ public class ChatController {
 //            rl.put("name",friend.getFriendname());
 //            rl.put("dept","hello");
 //        }
+
         List<HashMap<String,Object>> l= hbaseService.getFriendList("panUser",list);
         map.put("list",l);
+        return map;
+    }
+    @PostMapping("/getmyfriendsNew")
+    @ResponseBody
+    public HashMap<String,Object> getmyfriendsNew(String name) throws Exception {
+        HashMap<String,Object> map=new HashMap<>();
+        List<Friend> list=friendService.selectFriendByName(name);
+        HashMap<String,String> rl=new HashMap<>();
+
+        map.put("list",list);
         return map;
     }
     @PostMapping("/listmessagebypage")

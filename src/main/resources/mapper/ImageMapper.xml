@@ -20,8 +20,13 @@
         select 
         <include refid="image_Column" /> 
         from image
-    </select> 
-
+    </select>
+    <select id="selectImageId" resultMap="result_Image_Map">
+        select
+        <include refid="image_Column" />
+        from image
+        where image.dynamicId=#{dynamicId}
+    </select>
     <select id="selectImageById" parameterType="java.lang.Integer" resultMap="result_Image_Map">
         select 
             <include refid="image_Column" /> 

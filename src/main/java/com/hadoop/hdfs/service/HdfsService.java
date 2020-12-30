@@ -113,6 +113,7 @@ public class HdfsService {
         }
         String dest =downloadPath;
         Configuration conf = new Configuration();
+        conf.set("dfs.client.use.datanode.hostname", "true");
         FileSystem fs = FileSystem.get(URI.create(dest),conf);
         FSDataInputStream fsdi = fs.open(new Path(dest));
         OutputStream output = res.getOutputStream();

@@ -1,5 +1,7 @@
 package com.example.test.serviceImpl;
 import java.util.List;
+
+import com.example.test.bean.SharefileBean;
 import com.example.test.mapper.SharefileMapper;
 import com.example.test.bean.Sharefile;
 import com.example.test.service.SharefileService;
@@ -51,6 +53,16 @@ public class SharefileServiceImpl implements SharefileService{
     @Override
     public List<Sharefile> selectSharefileByUsername(String username) {
         return sharefileMapper.selectSharefileByUsername(username);
+    }
+
+    @Override
+    public List<SharefileBean> selectSharefileBeanByUsername(String username) {
+        return sharefileMapper.selectSharefileBeanByUsername(username);
+    }
+
+    @Override
+    public SharefileBean selectSharefileBeanByCode(String code) {
+        return sharefileMapper.selectSharefileBeanByCode(code);
     }
 
     public SharefileMapper getSharefileMapper() {

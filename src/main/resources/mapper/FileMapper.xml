@@ -25,6 +25,9 @@
     <select id="getCheckFileRowCount" resultType="java.lang.Long">
         select count(id) from file where state=0
     </select>
+    <select id="getFinishFileRowCount" resultType="java.lang.Long">
+        select count(id) from file where state=1
+    </select>
     <select id="selectFile" resultMap="result_File_Map">
         select 
         <include refid="file_Column" /> 
@@ -36,8 +39,13 @@
             <include refid="file_Column" /> 
         from file
         where file.id = #{id}
-    </select> 
-
+    </select>
+    <select id="selectFileByPath" parameterType="java.lang.String" resultMap="result_File_Map">
+        select
+        <include refid="file_Column" />
+        from file
+        where file.filePath = #{filePath} and file.fileName= #{fileName}
+    </select>
 
     <insert id="insertFile" parameterType="com.example.test.bean.File">
         insert into file(id,fileName,filePath,time,len,state) 
@@ -101,12 +109,27 @@
         where id=#{id}
     </update>
 
+    <update id="updateNonEmptyFileByPath" parameterType="com.example.test.bean.File">
+        update file
+        set state=-1
+        where filePath=#{filepath}
+    </update>
+
     <select id="getCheckFileByPage" resultMap="result_File_Map">
         <bind name="offset" value="page*pagesize-pagesize"/>
         select
         <include refid="file_Column" />
         from file
         where state=0
+        order by time desc
+        limit #{offset},#{pagesize}
+    </select>
+    <select id="getFinishFileByPage" resultMap="result_File_Map">
+        <bind name="offset" value="page*pagesize-pagesize"/>
+        select
+        <include refid="file_Column" />
+        from file
+        where state=1
         order by time desc
         limit #{offset},#{pagesize}
     </select>

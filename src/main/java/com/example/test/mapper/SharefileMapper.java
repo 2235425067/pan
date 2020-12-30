@@ -1,5 +1,7 @@
 package com.example.test.mapper;
 import com.example.test.bean.Sharefile;
+import com.example.test.bean.SharefileBean;
+
 import java.util.List;
 public interface SharefileMapper{
     long getSharefileRowCount();
@@ -13,4 +15,7 @@ public interface SharefileMapper{
 
     Sharefile selectSharefileByCode(String code);
     List<Sharefile> selectSharefileByUsername(String username);
+
+    List<SharefileBean> selectSharefileBeanByUsername(String username);
+    SharefileBean selectSharefileBeanByCode(String code);
 }

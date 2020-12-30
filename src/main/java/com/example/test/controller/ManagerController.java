@@ -5,6 +5,7 @@ import com.example.test.bean.UserBean;
 import com.example.test.bean.message;
 import com.example.test.service.FileService;
 import com.example.test.service.UserService;
+import com.jwt.bean.JwtToken;
 import com.lc.aop.annotation.Log;
 import com.lc.aop.entity.SysLog;
 import com.lc.aop.service.SysLogService;
@@ -69,10 +70,11 @@ public class ManagerController {
     }
     )
     @ResponseBody
-    public List<SysLog> updateManager(int currentPage, int pageSize){
+    public List<SysLog> getLogByPage(int currentPage, int pageSize){
         List<SysLog> list= sysLogService.getLogByPage(currentPage,pageSize);
         return list;
     }
+    @JwtToken
     @PostMapping(value = "/getLogCount")
     @ApiOperation("获得用户日志表元组个数")
     @ResponseBody
@@ -87,6 +89,13 @@ public class ManagerController {
         long ans= fileService.getCheckFileRowCount();
         return ans;
     }
+    @PostMapping(value = "/getFinishFileRowCount")
+    @ApiOperation("获得审核通过文件个数")
+    @ResponseBody
+    public long getFinishFileRowCount(){
+        long ans= fileService.getFinishFileRowCount();
+        return ans;
+    }
     @PostMapping(value = "/getCheckFileBypage")
     @ApiOperation("获得未审核文件(根据页号和页面大小)")
     @ApiImplicitParams({
@@ -97,6 +106,18 @@ public class ManagerController {
     @ResponseBody
     public List<File>  getCheckFileBypage(int currentPage, int pageSize){
         List<File> list= fileService.getCheckFileByPage(currentPage,pageSize);
+        return list;
+    }
+    @PostMapping(value = "/getFinishFileBypage")
+    @ApiOperation("获得审核通过文件(根据页号和页面大小)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "currentPage", value = "页号(1开始)",dataType="int",required = true),
+            @ApiImplicitParam(name = "pageSize", value = "页面大小",dataType="int",required = true)
+    }
+    )
+    @ResponseBody
+    public List<File>  getFinishFileBypage(int currentPage, int pageSize){
+        List<File> list= fileService.getFinishFileByPage(currentPage,pageSize);
         return list;
     }
     @Log("修改文件状态")
